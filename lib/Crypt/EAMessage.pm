@@ -271,7 +271,7 @@ to return a hex key:
 Note that this module use L<Storable>. Thus this module should only be used
 when the endpoint is trusted. This module will ensure that the stored
 object is received without tampering by an intermediary (and is secure even
-when an untrusted third party can modify the encrypted message in transit,
+when an untrusted third party can modify the encrypted message in transit),
 because C<thaw> is not called unless the message passes authentication
 checks.  But if an endpoint can create a malicious message using a valid
 key, it is possible that this message could exploit some vulnerability in
