@@ -1,3 +1,8 @@
+1.001 - Oct 09, 2016
+Joel C. Maslak <jmaslak@antelope.net>
+ * One test was pulling in JCM::Boilerplate which is EXTREMELY heavy
+   on dependencies.  Removed!
+
 1.000 - Oct 03, 2016
 Joel C. Maslak <jmaslak@antelope.net>
  * Initial Version

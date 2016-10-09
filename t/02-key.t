@@ -5,8 +5,6 @@
 # All Rights Reserved - See License
 #
 
-use JCM::Boilerplate 'script';
-
 use Test2::Bundle::Extended 0.000058;
 
 use Crypt::EAMessage;
