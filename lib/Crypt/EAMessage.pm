@@ -193,7 +193,7 @@ sub encrypt_auth_ascii($self, $input) {
 }
 
 sub _encrypt_auth_internal($self, $input) {
-    my $random = Bytes::Random::Secure->new(Bits => 1024, NonBlocking => 1);
+    state $random = Bytes::Random::Secure->new(Bits => 1024, NonBlocking => 1);
     my $nonce = $random->bytes(16);
 
     my $frozen = nfreeze(\$input);
