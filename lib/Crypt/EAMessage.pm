@@ -1,11 +1,11 @@
 #
-# Copyright (C) 2015 J. Maslak
+# Copyright (C) 2015-2017 Joelle Maslak
 # All Rights Reserved - See License
 #
 
-use v5.22;
-
 package Crypt::EAMessage;
+
+use v5.22;
 
 # ABSTRACT: Simple-to-use Abstraction of Encrypted Authenticated Messages
 
@@ -75,19 +75,19 @@ parameter.  See the C<raw_key> and C<hex_key> attributes.
 
 =cut
 
-around 'BUILDARGS', sub($orig, $class, %args) {
+around 'BUILDARGS', sub ( $orig, $class, %args ) {
     my (@only_one) = qw(raw_key hex_key);
     my $cnt = 0;
     foreach my $a (@only_one) {
-        if (exists($args{$a})) {
+        if ( exists( $args{$a} ) ) {
             $cnt++;
         }
     }
-    if ($cnt > 1) { die("Must not have multiple *_key arguments"); }
+    if ( $cnt > 1 ) { die("Must not have multiple *_key arguments"); }
 
-    if (exists($args{hex_key})) {
+    if ( exists( $args{hex_key} ) ) {
         my $hex = $args{hex_key};
-        delete($args{hex_key});
+        delete( $args{hex_key} );
 
         $args{raw_key} = _hex_to_raw($hex);
     }
@@ -96,27 +96,26 @@ around 'BUILDARGS', sub($orig, $class, %args) {
 };
 
 sub _hex_to_raw($hex) {
-    $hex =~ s/^0x//; # Remove 0x leader if it is present
+    $hex =~ s/^0x//;    # Remove 0x leader if it is present
 
-    if ($hex =~ /[^0-9A-Fa-f]/s) { die("Non-hex characters present in hex_key"); }
+    if ( $hex =~ /[^0-9A-Fa-f]/s ) { die("Non-hex characters present in hex_key"); }
 
     my $l = length($hex);
-    if ( ($l != 32) && ($l != 48) && ($l != 64) ) {
+    if ( ( $l != 32 ) && ( $l != 48 ) && ( $l != 64 ) ) {
         die("hex_key is the wrong length");
     }
 
-    return pack('H*', $hex);
+    return pack( 'H*', $hex );
 }
 
-subtype 'Crypt::EAMessage::Key',
-    as 'Str',
-    where { _valid_key($_) },
-    message { "AES key lengths must be 16, 24, or 32 bits long" };
+subtype 'Crypt::EAMessage::Key', as 'Str',
+  where { _valid_key($_) },
+  message { "AES key lengths must be 16, 24, or 32 bits long" };
 
 sub _valid_key($key) {
     my $l = length($_);
-    
-    if ( ($l != 16) && ($l != 24) && ($l != 32) ) { return undef; }
+
+    if ( ( $l != 16 ) && ( $l != 24 ) && ( $l != 32 ) ) { return; }
     if ( utf8::is_utf8($key) ) {
         die("Key must not be UTF-8 encoded");
     }
@@ -147,18 +146,18 @@ of 32, 48, or 64 hex digits (creating a 16, 24, or 32 byte key).
 =cut
 
 sub hex_key {
-    if ( (scalar(@_) < 1) || (scalar(@_) > 2) ) {
+    if ( ( scalar(@_) < 1 ) || ( scalar(@_) > 2 ) ) {
         confess("Invalid call");
     }
 
     my $self = shift;
 
-    if (scalar(@_) == 1) {
+    if ( scalar(@_) == 1 ) {
         # Setter
         $self->raw_key( _hex_to_raw(shift) );
     }
-    
-    return unpack('H*', $self->raw_key());
+
+    return unpack( 'H*', $self->raw_key() );
 }
 
 =method encrypt_auth
@@ -171,9 +170,9 @@ cipher text output.
 
 =cut
 
-sub encrypt_auth($self, $input) {
+sub encrypt_auth ( $self, $input ) {
     my $ct = $self->_encrypt_auth_internal($input);
-    return "1$ct"; # Type 1 = Binary Format
+    return "1$ct";    # Type 1 = Binary Format
 }
 
 =method encrypt_auth_ascii
@@ -186,19 +185,20 @@ cipher text output.
 
 =cut
 
-sub encrypt_auth_ascii($self, $input) {
-    my $ct = $self->_encrypt_auth_internal($input);
+sub encrypt_auth_ascii ( $self, $input ) {
+    my $ct     = $self->_encrypt_auth_internal($input);
     my $base64 = encode_base64($ct);
-    return "2$base64"; # Type 2 = Base 64
+    return "2$base64";    # Type 2 = Base 64
 }
 
-sub _encrypt_auth_internal($self, $input) {
-    state $random = Bytes::Random::Secure->new(Bits => 1024, NonBlocking => 1);
+sub _encrypt_auth_internal ( $self, $input ) {
+    state $random = Bytes::Random::Secure->new( Bits => 1024, NonBlocking => 1 );
     my $nonce = $random->bytes(16);
 
-    my $frozen = nfreeze(\$input);
+    my $frozen = nfreeze( \$input );
 
-    my ($enc, $tag) = ccm_encrypt_authenticate('AES', $self->raw_key(), $nonce, '', 128, $frozen);
+    my ( $enc, $tag ) =
+      ccm_encrypt_authenticate( 'AES', $self->raw_key(), $nonce, '', 128, $frozen );
 
     my $ct = $nonce . $tag . $enc;
     return $ct;
@@ -215,32 +215,32 @@ it returns the plaintext/object.
 
 =cut
 
-sub decrypt_auth($self, $ct) {
-    if (length($ct) < 34) { die("Message too short to be valid") }
+sub decrypt_auth ( $self, $ct ) {
+    if ( length($ct) < 34 ) { die("Message too short to be valid") }
 
-    my $type = substr($ct, 0, 1);
-    my $enc  = substr($ct, 1);
+    my $type = substr( $ct, 0, 1 );
+    my $enc = substr( $ct, 1 );
 
-    if ($type eq '1') {
+    if ( $type eq '1' ) {
         return $self->_decrypt_auth_internal($enc);
-    } elsif ($type eq '2') {
-        my $ascii = decode_base64($enc); # It's okay if this ignores bad base64,
-                                         # since we'll fail decryption.
+    } elsif ( $type eq '2' ) {
+        my $ascii = decode_base64($enc);    # It's okay if this ignores bad base64,
+                                            # since we'll fail decryption.
         return $self->_decrypt_auth_internal($ascii);
     } else {
         die("Unsupported encoding type");
     }
 }
 
-sub _decrypt_auth_internal($self, $ct) {
-    if (length($ct) < 34) { die("Message too short to be valid") }
+sub _decrypt_auth_internal ( $self, $ct ) {
+    if ( length($ct) < 34 ) { die("Message too short to be valid") }
 
-    my $nonce = substr($ct, 0, 16);
-    my $tag   = substr($ct, 16, 16);
-    my $enc   = substr($ct, 32);
+    my $nonce = substr( $ct, 0,  16 );
+    my $tag   = substr( $ct, 16, 16 );
+    my $enc   = substr( $ct, 32 );
 
-    my $frozen = ccm_decrypt_verify('AES', $self->raw_key(), $nonce, '', $enc, $tag);
-    if (!defined($frozen)) { die("Could not decrypt message") }
+    my $frozen = ccm_decrypt_verify( 'AES', $self->raw_key(), $nonce, '', $enc, $tag );
+    if ( !defined($frozen) ) { die("Could not decrypt message") }
 
     my $plaintext = thaw($frozen);
     return $$plaintext;
