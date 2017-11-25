@@ -1,3 +1,9 @@
+1.004 - Nov 25, 2017
+Joelle Maslak <jmaslak@antelope.net>
+ * Improve testing
+ * Make module pass Critic
+ * Enable TravisCI
+
 1.003 - Aug 19, 2017
 Joelle Maslak <jmaslak@antelope.net>
  * Update author information only
