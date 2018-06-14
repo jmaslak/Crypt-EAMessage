@@ -178,16 +178,27 @@ sub encrypt_auth ( $self, $input ) {
 =method encrypt_auth_ascii
 
   my $ciphertext = $ea->encrypt_auth_ascii( $plaintext );
+  my $ciphertext = $ea->encrypt_auth_ascii( $plaintext, "" );
 
 Encrypts the plain text (or any other Perl object that C<Storable> can
 freeze and thaw) passed as a parameter, generating an ASCII (base64)
 cipher text output.
 
+If an argument after C<$plaintext> is supplied, that becomes the line ending
+for the output text.  If no argument is provided, a standard newline
+appropriate to the platform is used.  Otherwise, the value of that string
+is used as the line ending, in the same way as it would be if passed as
+the L<MIME::Base64::encode_base64> function's second argument.
+
+Note that when using line endings other than a blank ending (no line ending)
+or a standard newline, you should strip the new line identifier from the 
+cypertext before calling the L<decrypt_auth_ascii> method.
+
 =cut
 
-sub encrypt_auth_ascii ( $self, $input ) {
-    my $ct     = $self->_encrypt_auth_internal($input);
-    my $base64 = encode_base64($ct);
+sub encrypt_auth_ascii ( $self, $input, $eol = undef ) {
+    my $ct = $self->_encrypt_auth_internal($input);
+    my $base64 = encode_base64( $ct, $eol );
     return "2$base64";    # Type 2 = Base 64
 }
 

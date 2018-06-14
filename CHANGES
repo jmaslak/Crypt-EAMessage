@@ -4,6 +4,8 @@ Joelle Maslak <jmaslak@antelope.net>
  * Make module pass Critic
  * Enable TravisCI
  * Fix error message for wrong key length (s/bits/bytes/)
+ * Allow ASCII cypertext line endings to be configurable
+ * Released as DEV version.
 
 1.003 - Aug 19, 2017
 Joelle Maslak <jmaslak@antelope.net>
