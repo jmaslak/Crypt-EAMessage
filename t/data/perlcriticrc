@@ -28,6 +28,9 @@ allow_last_statement_to_be_comma_separated_in_map_and_grep = 1
 [Variables::ProhibitReusedNames]
 severity = 4
 
+# We don't want to require these
+[-ErrorHandling::RequireUseOfExceptions]
+
 # Testing for found words
 [BadStrings]
 words = Joel Maslak || Joel C. Maslak || J. Maslak
