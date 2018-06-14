@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015-2017 Joelle Maslak
+# Copyright (C) 2015-2018 Joelle Maslak
 # All Rights Reserved - See License
 #
 
@@ -110,7 +110,7 @@ sub _hex_to_raw($hex) {
 
 subtype 'Crypt::EAMessage::Key', as 'Str',
   where { _valid_key($_) },
-  message { "AES key lengths must be 16, 24, or 32 bits long" };
+  message { "AES key lengths must be 16, 24, or 32 bytes long" };
 
 sub _valid_key($key) {
     my $l = length($_);

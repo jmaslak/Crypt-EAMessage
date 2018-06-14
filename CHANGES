@@ -1,8 +1,9 @@
-1.004 - Nov 25, 2017
+1.004 - Jun 14, 2018
 Joelle Maslak <jmaslak@antelope.net>
  * Improve testing
  * Make module pass Critic
  * Enable TravisCI
+ * Fix error message for wrong key length (s/bits/bytes/)
 
 1.003 - Aug 19, 2017
 Joelle Maslak <jmaslak@antelope.net>
