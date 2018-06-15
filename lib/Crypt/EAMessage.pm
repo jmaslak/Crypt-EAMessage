@@ -192,7 +192,7 @@ is used as the line ending, in the same way as it would be if passed as
 the L<MIME::Base64::encode_base64> function's second argument.
 
 Note that when using line endings other than a blank ending (no line ending)
-or a standard newline, you should strip the new line identifier from the 
+or a standard newline, you should strip the new line identifier from the
 cypertext before calling the L<decrypt_auth_ascii> method.
 
 =cut

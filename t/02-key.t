@@ -49,7 +49,7 @@ foreach my $test (@KEYS) {
         my $hex_key = $ea->hex_key();
 
         isnt($raw_key, $hex_key, "Key $cnt has different hex and raw");
-        
+
         if ($type eq 'hex_key') {
             my $k = $key;
             $k =~ s/^0x//;

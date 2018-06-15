@@ -71,7 +71,7 @@ foreach my $msg (@MSG) {
 
     $encrypted =~ s/.$//;
     ok(dies( sub { $eamsg->decrypt_auth($encrypted) } ), "Can't decrypt msg $cnt with tampered-with message");
-    
+
     my $encrypted2 = $eamsg->encrypt_auth($txt);
     isnt($encrypted2, $encrypted, "Two encrypts of msg $cnt return different values");
 }
