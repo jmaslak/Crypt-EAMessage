@@ -1,4 +1,4 @@
-1.004 - Jun 14, 2018
+1.005 - Jun 14, 2018
 Joelle Maslak <jmaslak@antelope.net>
  * Improve testing
  * Make module pass Critic
@@ -6,6 +6,9 @@ Joelle Maslak <jmaslak@antelope.net>
  * Fix error message for wrong key length (s/bits/bytes/)
  * Allow ASCII cypertext line endings to be configurable
  * Released as DEV version.
+
+1.004 - June 14, 2018
+ * Trial version released to validate 1.005 changes
 
 1.003 - Aug 19, 2017
 Joelle Maslak <jmaslak@antelope.net>
