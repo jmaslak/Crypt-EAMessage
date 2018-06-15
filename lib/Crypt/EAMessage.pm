@@ -184,6 +184,7 @@ Encrypts the plain text (or any other Perl object that C<Storable> can
 freeze and thaw) passed as a parameter, generating an ASCII (base64)
 cipher text output.
 
+Starting in version 1.004, a second, optional, argument is allowed.
 If an argument after C<$plaintext> is supplied, that becomes the line ending
 for the output text.  If no argument is provided, a standard newline
 appropriate to the platform is used.  Otherwise, the value of that string
