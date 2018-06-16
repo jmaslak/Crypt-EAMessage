@@ -1,4 +1,4 @@
-1.006 - ???
+1.006 - Jun 15, 2018
 Joelle Maslak <jmaslak@antelope.net>
  * Trial version released to validate 1.007 changes
  * Aded encrypt_auth_urlsafe() method to produce output without line
