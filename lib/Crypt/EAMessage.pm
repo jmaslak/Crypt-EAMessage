@@ -216,6 +216,31 @@ sub _encrypt_auth_internal ( $self, $input ) {
     return $ct;
 }
 
+=method encrypt_auth_urlsafe
+
+  my $ciphertext = $ea->encrypt_auth_urlsafe( $plaintext );
+
+Added in version 1.006.
+
+Encrypts the plain text (or any other Perl object that C<Storable> can
+freeze and thaw) passed as a parameter, generating an ASCII (modified
+base64) cipher text output.  This output is safe to pass as part of a
+query string or URL.  Namely, it doesn't use the standard Base 64
+characters C<+> or C</>, replacing them with C<-> and C<_> respectively.
+In addition, rather than the string starting with a "2" (indicating the
+Base 64 variant), it will start with a "3".
+
+=cut
+
+sub encrypt_auth_urlsafe ( $self, $input, $eol = undef ) {
+    my $ct = $self->_encrypt_auth_internal($input);
+
+    my $urltext = encode_base64( $ct, "" );
+    $urltext =~ tr|\+/|-_|;
+
+    return "3$urltext";    # Type 3 = Modified Base 64
+}
+
 =method decrypt_auth
 
   my $plaintext = $ea->decrypt_auth( $ciphertext );
@@ -236,6 +261,11 @@ sub decrypt_auth ( $self, $ct ) {
     if ( $type eq '1' ) {
         return $self->_decrypt_auth_internal($enc);
     } elsif ( $type eq '2' ) {
+        my $ascii = decode_base64($enc);    # It's okay if this ignores bad base64,
+                                            # since we'll fail decryption.
+        return $self->_decrypt_auth_internal($ascii);
+    } elsif ( $type eq '3' ) {
+        $enc =~ tr|-_|+/|;
         my $ascii = decode_base64($enc);    # It's okay if this ignores bad base64,
                                             # since we'll fail decryption.
         return $self->_decrypt_auth_internal($ascii);
@@ -305,5 +335,9 @@ If you find any bug you believe has security implications, I would
 greatly appreciate being notified via email sent to jmaslak@antelope.net
 prior to public disclosure. In the event of such notification, I will
 attempt to work with you to develop a plan for fixing the bug.
+
+All other bugs can be reported via email to jmaslak@antelope.net or by
+using the Git Hub issue tracker
+at L<https://github.com/jmaslak/Crypt-EAMessage/issues>
 
 =cut
