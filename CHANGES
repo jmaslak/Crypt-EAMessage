@@ -1,10 +1,12 @@
-1.006 - Jun 15, 2018
+1.007 - Jun 16, 2018
 Joelle Maslak <jmaslak@antelope.net>
- * Trial version released to validate 1.007 changes
  * Aded encrypt_auth_urlsafe() method to produce output without line
    feeds or characters that might need to be escaped in a URL
  * Included additional documentation about reporting bugs
  * Add CONTRIBUTING and TODO docs
+
+1.006 - June 15, 2018
+ * Trial version released to validate 1.007 changes
 
 1.005 - Jun 14, 2018
 Joelle Maslak <jmaslak@antelope.net>
