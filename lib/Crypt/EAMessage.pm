@@ -227,8 +227,8 @@ freeze and thaw) passed as a parameter, generating an ASCII (modified
 base64) cipher text output.  This output is safe to pass as part of a
 query string or URL.  Namely, it doesn't use the standard Base 64
 characters C<+> or C</>, replacing them with C<-> and C<_> respectively.
-In addition, rather than the string starting with a "2" (indicating the
-Base 64 variant), it will start with a "3".
+In addition, the cyphertext output will start with a "3" rather than the
+"2" that the base 64 variant starts with.
 
 =cut
 
