@@ -232,7 +232,7 @@ Base 64 variant), it will start with a "3".
 
 =cut
 
-sub encrypt_auth_urlsafe ( $self, $input, $eol = undef ) {
+sub encrypt_auth_urlsafe ( $self, $input ) {
     my $ct = $self->_encrypt_auth_internal($input);
 
     my $urltext = encode_base64( $ct, "" );
