@@ -1,3 +1,6 @@
+1.008 - ????
+ * Added code of conduct
+
 1.007 - Jun 16, 2018
 Joelle Maslak <jmaslak@antelope.net>
  * Aded encrypt_auth_urlsafe() method to produce output without line
