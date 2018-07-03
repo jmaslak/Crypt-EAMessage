@@ -19,4 +19,6 @@ nytprof.out
 *.bs
 /_eumm/
 Crypt-EAMessage-*.*/
+Crypt-EAMessage-*.*.tar.gz
 errors.err
+perltidy.ERR
