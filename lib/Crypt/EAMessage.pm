@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015-2018 Joelle Maslak
+# Copyright (C) 2015-2019 Joelle Maslak
 # All Rights Reserved - See License
 #
 
@@ -35,8 +35,10 @@ use namespace::autoclean;
 
   my $eamsg = Crypt::EAMessage->new( hex_key => $hex );
 
-  $encrypted = $eamsg->encrypt_auth($input);
-  $enc_ascii = $eamsg->encrypt_auth_ascii($input);
+  $encrypted    = $eamsg->encrypt_auth($input);
+  $enc_ascii    = $eamsg->encrypt_auth_ascii($input);
+  $enc_url      = $eamsg->encrypt_auth_urlsafe($input);
+  $enc_portable = $eamsg->encrypt_auth_portable($input); # Input must be text
 
   $decrypted = $eamsg->decrypt_auth($encrypted);
 
@@ -203,14 +205,28 @@ sub encrypt_auth_ascii ( $self, $input, $eol = undef ) {
     return "2$base64";    # Type 2 = Base 64
 }
 
-sub _encrypt_auth_internal ( $self, $input ) {
+sub _encrypt_auth_internal ( $self, $input, $opts = {} ) {
     state $random = Bytes::Random::Secure->new( Bits => 1024, NonBlocking => 1 );
+
+    for my $opt ( sort keys %$opts ) {
+        if ( $opt eq 'text' ) { next; }
+
+        die("Unknown option to encrypt: $opt");
+    }
+
     my $nonce = $random->bytes(16);
 
-    my $frozen = nfreeze( \$input );
+    my $data;
+    if ( ( !exists( $opts->{text} ) ) && ( !$opts->{text} ) ) {
+        # Any type of input
+        $data = nfreeze( \$input );
+    } else {
+        # Text only input
+        $data = $input;
+    }
 
     my ( $enc, $tag ) =
-      ccm_encrypt_authenticate( 'AES', $self->raw_key(), $nonce, '', 128, $frozen );
+      ccm_encrypt_authenticate( 'AES', $self->raw_key(), $nonce, '', 128, $data );
 
     my $ct = $nonce . $tag . $enc;
     return $ct;
@@ -241,6 +257,35 @@ sub encrypt_auth_urlsafe ( $self, $input ) {
     return "3$urltext";    # Type 3 = Modified Base 64
 }
 
+=method encrypt_auth_portable
+
+  my $ciphertext = $ea->encrypt_auth_portable( $plaintext );
+
+Added in version 1.190900
+
+Encrypts the plain text (or byte string) passed as a parameter, generating
+an ASCII (modified base64) cipher text output.  This output is safe to pass
+as part of a query string or URL.  Namely, it doesn't use the standard Base 64
+characters C<+> or C</>, replacing them with C<-> and C<_> respectively.
+In addition, the cyphertext output will start with a "4".
+
+This is intended for cross-language compatibility, so it does not utilize
+store/thaw.
+
+SECURITY NOTE: The contents of a zero length string can be determined from
+the length of the encrypted portable message.
+
+=cut
+
+sub encrypt_auth_portable ( $self, $input ) {
+    my $ct = $self->_encrypt_auth_internal( $input, { text => 1 } );
+
+    my $urltext = encode_base64( $ct, "" );
+    $urltext =~ tr|\+/|-_|;
+
+    return "4$urltext";    # Type 3 = Modified Base 64
+}
+
 =method decrypt_auth
 
   my $plaintext = $ea->decrypt_auth( $ciphertext );
@@ -269,13 +314,24 @@ sub decrypt_auth ( $self, $ct ) {
         my $ascii = decode_base64($enc);    # It's okay if this ignores bad base64,
                                             # since we'll fail decryption.
         return $self->_decrypt_auth_internal($ascii);
+    } elsif ( $type eq '4' ) {
+        $enc =~ tr|-_|+/|;
+        my $ascii = decode_base64($enc);    # It's okay if this ignores bad base64,
+                                            # since we'll fail decryption.
+        return $self->_decrypt_auth_internal( $ascii, { text => 1 } );
     } else {
         die("Unsupported encoding type");
     }
 }
 
-sub _decrypt_auth_internal ( $self, $ct ) {
-    if ( length($ct) < 34 ) { die("Message too short to be valid") }
+sub _decrypt_auth_internal ( $self, $ct, $opts = {} ) {
+    if ( length($ct) < 32 ) { die("Message too short to be valid") }
+
+    for my $opt ( sort keys %$opts ) {
+        if ( $opt eq 'text' ) { next; }
+
+        die("Unknown option to decrypt: $opt");
+    }
 
     my $nonce = substr( $ct, 0,  16 );
     my $tag   = substr( $ct, 16, 16 );
@@ -284,8 +340,14 @@ sub _decrypt_auth_internal ( $self, $ct ) {
     my $frozen = ccm_decrypt_verify( 'AES', $self->raw_key(), $nonce, '', $enc, $tag );
     if ( !defined($frozen) ) { die("Could not decrypt message") }
 
-    my $plaintext = thaw($frozen);
-    return $$plaintext;
+    if ( ( !exists( $opts->{text} ) ) && ( !$opts->{text} ) ) {
+        # Perl 5 data structure
+        my $plaintext = thaw($frozen);
+        return $$plaintext;
+    } else {
+        # Plain text
+        return $frozen;
+    }
 }
 
 __PACKAGE__->meta->make_immutable;
