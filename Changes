@@ -1,6 +1,8 @@
 {{$NEXT}}
  * Added tests for unsupported encodings
  * Added test for tampered-with message
+ * Added portable message format (for future cross-language
+   compatibility)
 
 1.181840  2018-07-02 20:58:55-06:00 America/Denver
 Joelle Maslak <jmaslak@antelope.net>
