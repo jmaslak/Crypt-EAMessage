@@ -75,7 +75,10 @@ foreach my $msg (@MSG) {
     ok(dies( sub { $eamsg->decrypt_auth($encrypted) } ), "Can't decrypt msg $cnt with bad key");;
 
     $encrypted =~ s/.$//;
-    ok(dies( sub { $eamsg->decrypt_auth($encrypted) } ), "Can't decrypt msg $cnt with tampered-with message");
+    ok(dies( sub { $eamsg->decrypt_auth($encrypted) } ), "Can't decrypt msg $cnt with tampered-with (shortened) message");
+
+    $encrypted .= chr(0);
+    ok(dies( sub { $eamsg->decrypt_auth($encrypted) } ), "Can't decrypt msg $cnt with tampered-with (appended) message");
 
     my $encrypted2 = $eamsg->encrypt_auth($txt);
     isnt($encrypted2, $encrypted, "Two encrypts of msg $cnt return different values");
