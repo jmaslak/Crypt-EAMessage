@@ -1,6 +1,8 @@
 {{$NEXT}}
+ * Added tests for unsupported encodings
 
 1.181840  2018-07-02 20:58:55-06:00 America/Denver
+Joelle Maslak <jmaslak@antelope.net>
  * Added code of conduct
 
 1.007 - Jun 16, 2018
