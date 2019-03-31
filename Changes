@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+1.190900  2019-03-30 20:43:58-06:00 America/Denver
  * Added tests for unsupported encodings
  * Added test for tampered-with message
  * Added portable message format (for future cross-language
