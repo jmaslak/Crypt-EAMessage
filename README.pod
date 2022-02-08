@@ -8,7 +8,7 @@ Crypt::EAMessage - Simple-to-use Abstraction of Encrypted Authenticated Messages
 
 =head1 VERSION
 
-version 1.220390
+version 1.220391
 
 =head1 SYNOPSIS
 
