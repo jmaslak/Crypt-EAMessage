@@ -25,7 +25,7 @@ use Crypt::EAMessage;
 
 =head1 DESCRIPTION
 
-Added in version 1.223900
+Added in version 1.220390
 
 This module should never be used in a C<use> statement or included in your
 code.

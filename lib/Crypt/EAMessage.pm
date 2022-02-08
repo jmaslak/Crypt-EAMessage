@@ -354,7 +354,7 @@ sub _decrypt_auth_internal ( $self, $ct, $opts = {} ) {
 
  say "Hex key: " . Crypt::EAMessage->generate_key()
 
-Added in version 1.223900
+Added in version 1.220390
 
 This is a class method (I.E. you do not need to instantiate the
 C<Crypt::EAMessage> class to use this).
