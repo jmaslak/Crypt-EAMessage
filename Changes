@@ -1,4 +1,7 @@
 {{$NEXT}}
+ * Added generte_key() class method to generate an AES256 key securely.
+ * Added Crypt::EAMessage::Keygen module to make generating keys easier
+   from the CLI or one-liners
 
 1.202120  2020-07-30 00:02:13+00:00 UTC
  * Minor tidying, no functional changes
