@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015-2022 Joelle Maslak
+# Copyright (C) 2015-2023 Joelle Maslak
 # All Rights Reserved - See License
 #
 
@@ -46,7 +46,8 @@ use namespace::autoclean;
 
 This module provides an easy-to-use method to create encrypted and
 authenticated messages from arbitrary Perl objects (anything compatible
-with L<Storable>).
+with L<Storable>). Note that Perl 5.38+ Corinna class objects are not
+serializable with L<Storable>.
 
 While there are many modules that encrypt text, there are many less that
 provide encryption and authentication without a complex interface.  This
@@ -207,6 +208,10 @@ sub encrypt_auth_ascii ( $self, $input, $eol = undef ) {
 
 sub _encrypt_auth_internal ( $self, $input, $opts = {} ) {
     state $random = Bytes::Random::Secure->new( Bits => 1024, NonBlocking => 1 );
+
+    if (Scalar::Util::reftype($input) eq "OBJECT") {
+        die("Cannot encrypt a perl class (new style) object")
+    }
 
     for my $opt ( sort keys %$opts ) {
         if ( $opt eq 'text' ) { next; }

@@ -1,4 +1,5 @@
 {{$NEXT}}
+ * Throw a more friendly error if you attempt to encrypt a class object
 
 1.220391  2022-02-08 21:46:49+00:00 UTC
  * Released as non-trial release
