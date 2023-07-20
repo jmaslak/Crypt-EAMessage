@@ -24,8 +24,8 @@ no warnings "experimental::signatures";
 
 use Bytes::Random::Secure;
 use Crypt::AuthEnc::CCM qw(ccm_encrypt_authenticate ccm_decrypt_verify);
-use MIME::Base64 qw(encode_base64 decode_base64);
-use Storable qw(nfreeze thaw);
+use MIME::Base64        qw(encode_base64 decode_base64);
+use Storable            qw(nfreeze thaw);
 
 use namespace::autoclean;
 
@@ -209,8 +209,10 @@ sub encrypt_auth_ascii ( $self, $input, $eol = undef ) {
 sub _encrypt_auth_internal ( $self, $input, $opts = {} ) {
     state $random = Bytes::Random::Secure->new( Bits => 1024, NonBlocking => 1 );
 
-    if (Scalar::Util::reftype($input) eq "OBJECT") {
-        die("Cannot encrypt a perl class (new style) object")
+    if ( defined Scalar::Util::reftype($input) ) {
+        if ( Scalar::Util::reftype($input) eq "OBJECT" ) {
+            die("Cannot encrypt a perl class (new style) object");
+        }
     }
 
     for my $opt ( sort keys %$opts ) {
